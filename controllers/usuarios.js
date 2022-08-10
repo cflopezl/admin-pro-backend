@@ -5,13 +5,37 @@ const { generarJWT } = require('../helpers/jwt');
 
 const getUsuarios = async (req, res) => {
 
-    const usuarios = await Usuario.find({}, 'nombre email role google');
+    //sino me envían el parámetro desde le asigno 0
+    const desde = Number(req.query.desde) || 0;
+
+    //si dejamos la búsqueda de usuarios y el total con await estamos desaprovechando 
+    //las ventajas de una programación concurrente porque se estarían ejecutando en secuencia
+/*
+    const usuarios = await Usuario
+                    .find({}, 'nombre email role google')
+                    .skip( desde )
+                    .limit( 5 );
+
+    const total = await Usuario.count();
+*/
+    //esto se mejora de la siguiente forma
+    const [ usuarios, total ] = await Promise.all([
+        
+        Usuario
+            .find({}, 'nombre email role google img')
+            .skip( desde )
+            .limit( 5 ),
+
+        Usuario.countDocuments(),
+        
+    ]);
 
     //se aprovecha la información incorporada en el middleware validar-jwt.js: req.uid
     res.json({
         ok: true,
         usuarios,
-        uid: req.uid
+        uid: req.uid,
+        total
     })
 
 }

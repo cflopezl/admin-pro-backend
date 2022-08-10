@@ -25,8 +25,12 @@ app.use( express.json() );
 // Para el manejo de las rutas se utilizará un middleware
 // en esta instrucción se indica que cualquier petición a /api/usuarios la maneja el coponente que es requerido
 // de esta forma queda más simple y ordenado el controlador 
-app.use('/api/usuarios', require('./routes/usuarios'));
 app.use('/api/login', require('./routes/auth'));
+app.use('/api/usuarios', require('./routes/usuarios'));
+app.use('/api/hospitales', require('./routes/hospitales'));
+app.use('/api/medicos', require('./routes/medicos'));
+app.use('/api/todo', require('./routes/busquedas'));
+app.use('/api/uploads', require('./routes/uploads'));
 
 
 /* Ejemplo de como sería sino se separan las rutas 
