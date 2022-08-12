@@ -14,6 +14,9 @@ const app = express();
 //"use" se utiliza para configurar un middelware
 app.use( cors() );
 
+// carpeta pública
+app.use( express.static('public') );
+
 //base de datos
 dbConnection();
 
