@@ -41,29 +41,75 @@ const crearMedico = async (req, res=response) => {
 
 }
 
-const actualizarMedico = async (req, res) => {
+const borrarMedico = async (req, res) => {
 
-    //const hospitales = await Hospital.find({}, 'nombre img');
+    const id = req.params.id;
 
-    //se aprovecha la información incorporada en el middleware validar-jwt.js: req.uid
-    res.json({
-        ok: true,
-        msg: 'actualizarMedico'
-        //hospitales
-    })
+    try {
+
+        const medicoDB = await Medico.findById( id );
+        if( !medicoDB ){
+            res.status(404).json({
+                ok: false,
+                msg: 'Medico no encontrado',
+            });
+        }
+
+        await Medico.findByIdAndDelete( id );
+        
+        res.json({
+            ok: true,
+            msg: 'Medico eliminado'
+        })
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            ok: false,
+            msg: 'Error al eliminar medico',
+        });
+    }
 
 }
 
-const borrarMedico = async (req, res) => {
+const actualizarMedico = async (req, res) => {
 
-    //const hospitales = await Hospital.find({}, 'nombre img');
+    const id = req.params.id;
+    const uid = req.uid;
 
-    //se aprovecha la información incorporada en el middleware validar-jwt.js: req.uid
-    res.json({
-        ok: true,
-        msg: 'borrarMedico'
-        //hospitales
-    })
+    try {
+
+        const medicoDB = await Medico.findById( id );
+        if( !medicoDB ){
+            res.status(404).json({
+                ok: false,
+                msg: 'medico no encontrado',
+            });
+        }
+
+        //ejemplo cuando es solo un campo
+        //hospitalDB.nombre = req.body.nombre;
+        //otra forma de hacerlo
+        const cambiosMedico = {
+            ...req.body,
+            usuario: uid
+        }
+
+        //{new: true} nos devuelve el documento actualizado
+        const medicoActualizado = await Medico.findByIdAndUpdate( id, cambiosMedico, { new: true } );
+        
+        res.json({
+            ok: true,
+            medico: medicoActualizado
+        })
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            ok: false,
+            msg: 'Error al actualizar medico',
+        });
+    }
 
 }
 
